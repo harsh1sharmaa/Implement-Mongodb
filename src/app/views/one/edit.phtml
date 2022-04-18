@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div>
+        <?php
+        if (isset($message)) {
+
+            $success = $message;
+            foreach ($success as $key => $value) {
+                // echo "<pre>";
+                // print_r($value);
+                $info = $value->info;
+                $additional = $value->additional;
+                $variation = $value->variation;
+            }
+
+            $infostr = "";
+            foreach ($info as $key => $value) {
+                $infostr .= '<div>' . $key . ' <input type="text" name="' . $key . '" value="' . $value . '"></div>';
+                // echo $key;
+                // echo $value;
+            }
+            $addistr = "";
+            foreach ($additional as $key => $value) {
+                $addistr .= '<div>' . $key . ' <input type="text" name="' . $key . '" value="' . $value . '"></div>';
+                // echo $key;
+                // echo $value;
+            }
+            $varistr = "";
+            for ($i = 0; $i < count($variation); $i++) {
+                $arr = $variation[$i];
+                // print_r($arr);
+                $varistr="";
+                foreach ($arr as $key => $value) {
+                    $variistr .= '<div>' . $key . ' <input type="text" name="' . $key . '" value="' . $value .'"></div>';
+                    // echo $key;
+                    // echo $value;
+                }
+            }
+        }
+
+        echo $varistr;
+
+
+
+
+        ?>
+
+        <form method="post" action="">
+
+
+
+
+
+
+        </form>
+    </div>
+
+</body>
+
+</html>
