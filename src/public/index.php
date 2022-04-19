@@ -21,6 +21,9 @@ use Phalcon\Events\Event;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
 use app\component\Locale;
+use Phalcon\Mvc\Router;
+
+
 
 
 
@@ -41,6 +44,7 @@ $loader->registerDirs(
         APP_PATH . "/controllers/",
         APP_PATH . "/models/",
         APP_PATH . "/component/",
+        APP_PATH . "/admin/",
 
     ]
 );
@@ -52,8 +56,10 @@ $loader->registerNamespaces(
 
         // 'app\component' => APP_PATH . '/component',
         'App\Listeners' => APP_PATH . '/listeners'
+       
     ]
 );
+
 
 $loader->register();
 
@@ -115,10 +121,24 @@ $container->set(
     }
 );
 
-// $eventsManager->attach(
-//     'notification',
-//     new \App\Listeners\NotificationListeners()
+// $container->set(
+//     'router',
+//     function () {
+//         $router = new Router();
+//     }
 // );
+
+
+
+
+
+
+
+
+
+
+
+
 
 $eventsManager->attach(
     'application:beforeHandleRequest',
@@ -135,6 +155,64 @@ $container->set(
 $application = new Application($container);
 $application->setEventsManager($eventsManager);
 
+// $container->set('locale', (new Locale())->getTranslator());
+
+
+
+
+//***************************************router***************************************************** */
+$container->set(
+    'router',
+    function () {
+        $router = new Router();
+
+        $router->setDefaultModule('front');
+
+        $router->add(
+            '/login',
+            [
+                'module'     => 'admin',
+                'controller' => 'one',
+                'action'     => 'index',
+            ]
+        );
+
+        $router->add(
+            '/admin/one/:action',
+            [
+                'module'     => 'admin',
+                'controller' => 'one',
+                'action'     => 1,
+            ]
+        );
+
+        $router->add(
+            '/products/:action',
+            [
+                'controller' => 'products',
+                'action'     => 1,
+            ]
+        );
+
+        return $router;
+    }
+);
+
+$application->registerModules(
+    [
+        'admin' => [
+            'className' => \app\admin\Module::class ,
+            'path'      => APP_PATH .'/admin/Module.php',
+        ],
+        'frontend'  => [
+            'className' => \app\admin\Module::class,
+            'path'      => '../app/frontend/Module.php',
+        ]
+    ]
+);
+
+
+
 
 
 
@@ -146,5 +224,5 @@ try {
 
     $response->send();
 } catch (\Exception $e) {
-    echo 'Exception: ', $e->getMessage();
+    echo 'Exception: ', $e;
 }

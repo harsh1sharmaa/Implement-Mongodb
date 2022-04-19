@@ -1,5 +1,6 @@
 <?php
 
+namespace app\admin\Controllers;
 use Phalcon\Mvc\Controller;
 use Phalcon\Http\Response;
 
@@ -7,32 +8,44 @@ use Phalcon\Http\Response;
 
 class OneController extends Controller
 {
+    public function indexAction()
+    {
+
+        echo "helo index";
+    }
+    public function helloAction()
+    {
+
+        echo "helo hello";
+    }
 
     public function getDataAction()
     {
 
-       
+
 
         $m = $this->mongo;
 
-      
+
         $db = $m->store;
 
-       
+
 
         $collection = $db->products;
-      
+
 
 
 
         $ans = $collection->find();
 
         return $ans;
-      
     }
 
     public function insertAction()
     {
+
+        // echo "helo insert";
+
         $data = $this->request->getPost();
         if (isset($data['search'])) {
             $productname = $data['productname'];
@@ -66,44 +79,24 @@ class OneController extends Controller
                     $key = $data['attriname' . $i . '' . $j];
                     $val = $data['attrival' . $i . '' . $j];
 
-                   
+
                     $objOfVariation = $objOfVariation + [$key => $val];
                 }
 
-              
+
 
                 array_push($variation, $objOfVariation);
-               
             }
             $doc = array("info" => $detail, "additional" => $additional, "variation" => $variation);
-            
+
             $m = $this->mongo;
             $db = $m->store;
-            $collection = $db->products;
-            $success = $collection->insertOne($doc);
-        } else {
-            $data = $this->getDataAction();
-
-         
-            $this->view->message = $data;
-        }
-    }
+            $collection = $db->products;Undocumented function
 
 
 
-    public function deleteAction()
-    {
-
-        $data = $this->request->get();
-
-
-
-        if (isset($data['submit'])) {
-
-
-          
             $id = $data['id'];
-           
+
 
             $m = $this->mongo;
 
@@ -111,12 +104,11 @@ class OneController extends Controller
             $collection = $db->products;
 
             $success = $collection->deleteOne(array("_id" => new MongoDB\BSON\ObjectId("$id")));
-          
         }
         $this->response->redirect("one/insert");
     }
 
-  
+
 
     public function getdatabyidAction()
     {
@@ -124,15 +116,14 @@ class OneController extends Controller
         $id = $this->request->getpost('id');
         $m = $this->mongo;
 
-     
+
         $db = $m->store;
         $collection = $db->products;
 
         $success = $collection->findOne(array("_id" => new MongoDB\BSON\ObjectId("$id")));
-       
+
         echo json_encode($success);
         die;
-      
     }
 
     public function orderAction()
@@ -153,7 +144,7 @@ class OneController extends Controller
             $coustomername = $post['coustomername'];
             $quantity = $post['quantity'];
             $createdate = date("Y-m-d");
-       
+
 
             $m = $this->mongo;
 
@@ -163,7 +154,6 @@ class OneController extends Controller
             $doc = array("productId" => $productId, "variation" => $variation, "coustomername" => $coustomername, "quantity" => $quantity, "created" => $createdate, "status" => "paid");
 
             $success = $collection->insertOne($doc);
-           
         }
 
         $this->view->message = $data;
@@ -172,7 +162,7 @@ class OneController extends Controller
     public function orderlistAction()
     {
 
-       
+
         $data = $this->request->getPost();
 
         $m = $this->mongo;
@@ -191,26 +181,21 @@ class OneController extends Controller
 
             $data = $this->request->getPost();
 
-          
+
             $status = $data['getstatus'];
             $date = $data['filterdate'];
 
             $filterdata = $this->filterAction($status, $date);
             $this->view->message = $filterdata;
-
-          
         } else {
 
             $ans = $collection->find();
             $this->view->message = $ans;
         }
-
-
-
     }
     public function filterAction($status, $date)
     {
-       
+
         $m = $this->mongo;
         $db = $m->store;
         $collection = $db->order;
@@ -230,15 +215,14 @@ class OneController extends Controller
             $stdate = $data['stdate'];
             $endate = $data['endate'];
             $ans = $collection->find(['$and' => [["created" => ['$lte' => $endate]], ["created" => ['$gte' => $stdate]]]]);
-         
         }
 
-      
+
 
 
 
         $ans = $collection->find(['$and' => [["status" => "$status"], ['$and' => [["created" => ['$lte' => $todaydate]], ["created" => ['$gte' => $selecteddate]]]]]]);
-      
+
 
         foreach ($ans as $key => $value) {
             echo "<pre>";
@@ -248,5 +232,4 @@ class OneController extends Controller
         die;
         return $ans;
     }
-    
 }
